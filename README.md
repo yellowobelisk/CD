@@ -951,8 +951,132 @@ GRAMMAR : : : F->(E)|id is not left recursive.
 ```
 
 ## 8)ii) Write a C program to remove left factoring from a given grammar
+
+#### GPT
 ```
-code
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_PROD_LEN 20
+#define MAX_PROD_NUM 10
+
+// Structure to represent a production
+typedef struct Production {
+    char lhs; // Left hand side of the production
+    char rhs[MAX_PROD_LEN]; // Right hand side of the production
+} Production;
+
+// Function prototypes
+void remove_left_factoring(Production* grammar, int* grammar_size);
+
+int main() {
+    // Define your grammar here
+    Production grammar[MAX_PROD_NUM] = {
+        {'S', "aAb"},
+        {'S', "aAc"},
+        {'A', "d"},
+        {'A', ""}
+    };
+
+    int grammar_size = 4; // Number of productions in the grammar
+
+    printf("Original Grammar:\n");
+    for (int i = 0; i < grammar_size; i++) {
+        printf("%c -> %s\n", grammar[i].lhs, grammar[i].rhs);
+    }
+
+    remove_left_factoring(grammar, &grammar_size);
+
+    printf("\nGrammar after Left Factoring:\n");
+    for (int i = 0; i < grammar_size; i++) {
+        printf("%c -> %s\n", grammar[i].lhs, grammar[i].rhs);
+    }
+
+    return 0;
+}
+
+// Function to remove left factoring from the grammar
+void remove_left_factoring(Production* grammar, int* grammar_size) {
+    for (int i = 0; i < *grammar_size; i++) {
+        char common_prefix[MAX_PROD_LEN] = "";
+        int prefix_length = 0;
+        for (int j = i + 1; j < *grammar_size; j++) {
+            int k;
+            for (k = 0; grammar[i].rhs[k] && grammar[j].rhs[k]; k++) {
+                if (grammar[i].rhs[k] != grammar[j].rhs[k]) {
+                    break;
+                }
+                common_prefix[k] = grammar[i].rhs[k];
+            }
+            common_prefix[k] = '\0';
+            if (k > prefix_length) {
+                prefix_length = k;
+            }
+        }
+
+        if (prefix_length > 0) {
+            // Create new non-terminal for common prefix
+            char new_lhs = grammar[*grammar_size - 1].lhs + 1;
+
+            // Update original production
+            strcpy(grammar[i].rhs, &grammar[i].rhs[prefix_length]);
+            grammar[i].lhs = new_lhs;
+
+            // Add new productions for common prefix
+            for (int j = i + 1; j < *grammar_size; j++) {
+                if (strncmp(grammar[j].rhs, common_prefix, prefix_length) == 0) {
+                    strcpy(grammar[j].rhs, &grammar[j].rhs[prefix_length]);
+                    grammar[j].lhs = new_lhs;
+                }
+            }
+
+            // Add new production for common prefix
+            grammar[*grammar_size].lhs = new_lhs;
+            strcpy(grammar[*grammar_size].rhs, common_prefix);
+            (*grammar_size)++;
+        }
+    }
+}
+```
+
+#### boxofcodes
+
+```
+#include<stdio.h>
+#include<string.h>
+int main()
+{
+    char gram[20],part1[20],part2[20],modifiedGram[20],newGram[20],tempGram[20];
+    int i,j=0,k=0,l=0,pos;
+    printf("Enter Production : A->");
+    gets(gram);
+    for(i=0;gram[i]!='|';i++,j++)
+        part1[j]=gram[i];
+    part1[j]='\0';
+    for(j=++i,i=0;gram[j]!='\0';j++,i++)
+        part2[i]=gram[j];
+    part2[i]='\0';
+    for(i=0;i<strlen(part1)||i<strlen(part2);i++){
+        if(part1[i]==part2[i]){
+            modifiedGram[k]=part1[i];
+            k++;
+            pos=i+1;
+        }
+    }
+    for(i=pos,j=0;part1[i]!='\0';i++,j++){
+        newGram[j]=part1[i];
+    }
+    newGram[j++]='|';
+    for(i=pos;part2[i]!='\0';i++,j++){
+        newGram[j]=part2[i];
+    }
+    modifiedGram[k]='X';
+    modifiedGram[++k]='\0';
+    newGram[j]='\0';
+    printf("\nGrammar Without Left Factoring : : \n");
+    printf(" A->%s",modifiedGram);
+    printf("\n X->%s\n",newGram);
+}
 ```
 
 ## 8)iii) Write a C program to find the first and follow of any given grammar. 
@@ -2870,7 +2994,7 @@ int main() {
 
 
 
-# SOURCE FOR 8.3,9,10,11
+# SOURCE FOR 8.3,9,10
 ```
 #include<stdio.h>
 #include<ctype.h>
