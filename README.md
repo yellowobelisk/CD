@@ -2574,7 +2574,104 @@ void followfirst(char c, int c1 , int c2)
 }
 ```
 
-## 11. Write a C program to check whether a given grammar will be accepted by LR(0) parser or not. 
+## 11. Write a C program to check whether a given grammar will be accepted by LR(0) parser or not. (Grammar input in main function)
+
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define MAX_PROD_LEN 20
+#define MAX_PROD_NUM 10
+#define MAX_ITEM_SET_SIZE 50
+
+// Structure to represent a production
+typedef struct Production {
+    char lhs; // Left hand side of the production
+    char rhs[MAX_PROD_LEN]; // Right hand side of the production
+} Production;
+
+// Structure to represent a LR(0) item
+typedef struct Item {
+    int prod_index; // Index of the production
+    int position;   // Position of the dot
+} Item;
+
+// Function prototypes
+void closure(Item item, Production* grammar, int grammar_size, bool* visited);
+bool is_same_item(Item item1, Item item2);
+bool contains_item(Item* item_set, int set_size, Item item);
+bool is_accepted_by_lr0(Production* grammar, int grammar_size);
+void lr0_parser(Production* grammar, int grammar_size);
+
+int main() {
+    // Define your grammar here
+    Production grammar[MAX_PROD_NUM] = {
+        {'S', "AB"},
+        {'A', "a"},
+        {'B', "a"}
+    };
+
+    int grammar_size = 3; // Number of productions in the grammar
+
+    if (is_accepted_by_lr0(grammar, grammar_size))
+        printf("Grammar is accepted by LR(0) parser.\n");
+    else
+        printf("Grammar is not accepted by LR(0) parser.\n");
+
+    return 0;
+}
+
+// Function to compute the closure of an LR(0) item
+void closure(Item item, Production* grammar, int grammar_size, bool* visited) {
+    visited[item.prod_index] = true;
+
+    char symbol = grammar[item.prod_index].rhs[item.position];
+
+    if (symbol >= 'A' && symbol <= 'Z') {
+        for (int i = 0; i < grammar_size; i++) {
+            if (grammar[i].lhs == symbol && !visited[i]) {
+                Item new_item = {i, 0};
+                closure(new_item, grammar, grammar_size, visited);
+            }
+        }
+    }
+}
+
+// Function to check if two LR(0) items are the same
+bool is_same_item(Item item1, Item item2) {
+    return (item1.prod_index == item2.prod_index) && (item1.position == item2.position);
+}
+
+// Function to check if an LR(0) item set contains a specific item
+bool contains_item(Item* item_set, int set_size, Item item) {
+    for (int i = 0; i < set_size; i++) {
+        if (is_same_item(item_set[i], item))
+            return true;
+    }
+    return false;
+}
+
+// Function to check if the grammar is accepted by LR(0) parser
+bool is_accepted_by_lr0(Production* grammar, int grammar_size) {
+    // Initialize the closure of the start production
+    bool visited[grammar_size];
+    memset(visited, false, sizeof(visited));
+
+    Item start_item = {0, 0};
+    closure(start_item, grammar, grammar_size, visited);
+
+    // Check if all productions were visited
+    for (int i = 0; i < grammar_size; i++) {
+        if (!visited[i])
+            return false;
+    }
+
+    return true;
+}
+
+```
 
 ## 12. Design a lexical analyzer for language given in the manual and the lexical analyzer should ignore redundant spaces, tabs and new lines. It should also ignore comments. Although the syntax specification states that identifiers can be arbitrarily long, you may restrict the length to some reasonable value. Simulate the same in C language.
 ```
