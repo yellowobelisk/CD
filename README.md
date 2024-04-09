@@ -2700,6 +2700,80 @@ void followfirst(char c, int c1 , int c2)
 
 ## 11. Write a C program to check whether a given grammar will be accepted by LR(0) parser or not. (Grammar input in main function)
 
+# CORRECT CODE
+
+```
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX_PRODUCTIONS 20
+#define MAX_PROD_LEN 20
+
+int isLR0(char productions[MAX_PRODUCTIONS][MAX_PROD_LEN], int count) {
+    int i, j, k;
+    char nt, firstProd, nextProd;
+
+    // Check for invalid productions
+    for (i = 0; i < count; i++) {
+        if (productions[i][0] == productions[i][1] || !isupper(productions[i][0]) || productions[i][0] == '#')
+            return 0;
+    }
+
+    // Check for conflicting productions
+    for (i = 0; i < count; i++) {
+        nt = productions[i][0];
+        firstProd = productions[i][2];
+
+        for (j = i + 1; j < count; j++) {
+            if (productions[j][0] == nt) {
+                nextProd = productions[j][2];
+
+                if (islower(firstProd) && islower(nextProd)) {
+                    if (firstProd != nextProd)
+                        return 0;
+                } else if (isupper(firstProd) && isupper(nextProd)) {
+                    continue;
+                } else {
+                    for (k = 0; productions[i][k] != '\0'; k++) {
+                        if (isupper(productions[i][k]) && islower(productions[j][2]))
+                            return 0;
+                    }
+                    for (k = 0; productions[j][k] != '\0'; k++) {
+                        if (isupper(productions[j][k]) && islower(productions[i][2]))
+                            return 0;
+                    }
+                }
+            }
+        }
+    }
+
+    return 1;
+}
+
+int main() {
+    char productions[MAX_PRODUCTIONS][MAX_PROD_LEN];
+    int count, i;
+
+    printf("Enter the number of productions: ");
+    scanf("%d", &count);
+
+    printf("Enter the productions (in the form A->X or A->XYZ):\n");
+    for (i = 0; i < count; i++) {
+        scanf("%s", productions[i]);
+    }
+
+    if (isLR0(productions, count))
+        printf("The grammar can be accepted by an LR(0) parser.\n");
+    else
+        printf("The grammar cannot be accepted by an LR(0) parser.\n");
+
+    return 0;
+}
+```
+
+
+
 ```
 #include <stdio.h>
 #include <stdlib.h>
