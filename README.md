@@ -533,7 +533,7 @@ int main() {
 ```
 
 
-## 5.1 Write a program in C to design a Lexical Analyser that identifies the keywords, identifiers, separators, and operators present in a input file code.
+## 5.1 Write a program in C to design a Lexical Analyser that identifies the keywords, identifiers, separators, and operators present in a input file (code.txt) code.
 ```
 #include <stdio.h> 
 #include <stdio.h> 
