@@ -609,6 +609,68 @@ int main() {
 
 
 ## 5.1 Write a program in C to design a Lexical Analyser that identifies the keywords, identifiers, separators, and operators present in a input file (code.txt) code.
+
+### Python
+```
+import re
+
+def is_keyword(word):
+    keywords = {"auto", "break", "case", "char", "const", "continue", "default", "do", 
+                "double", "else", "enum", "extern", "float", "for", "goto", "if", 
+                "int", "long", "register", "return", "short", "signed", "sizeof", 
+                "static", "struct", "switch", "typedef", "union", "unsigned", 
+                "void", "volatile", "while","main","return","for","include","case","bool"}
+    return word in keywords
+
+def is_operator(c):
+    operators = "+-*/%<>=&|^!"
+    return c in operators
+
+def is_separator(c):
+    separators = "(){}[],;:"
+    return c in separators
+
+def main():
+    filename = "code.txt"
+    try:
+        with open(filename, "r") as file:
+            keywords = set()
+            identifiers = set()
+            operators = set()
+            separators = set()
+
+            for line in file:
+                # Remove comments
+                line = re.sub(r'#.*', '', line)
+                words = re.findall(r'\b\w+\b', line)  # Extract words
+
+                for word in words:
+                    if is_keyword(word):
+                        keywords.add(word)
+                    elif word.isidentifier():
+                        identifiers.add(word)
+                
+                for char in line:
+                    if is_operator(char):
+                        operators.add(char)
+                    elif is_separator(char):
+                        separators.add(char)
+
+        print("Keywords:", *keywords)
+        print("Identifiers:", *identifiers)
+        print("Operators:", *operators)
+        print("Separators:", *separators)
+
+    except FileNotFoundError:
+        print("Error: File not found")
+
+if __name__ == "__main__":
+    main()
+
+```
+
+### C code
+
 ```
 #include <stdio.h> 
 #include <stdio.h> 
