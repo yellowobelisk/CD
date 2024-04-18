@@ -294,6 +294,81 @@ printf( “The sum is %d",c);
 
 
 ## 2. Write a C program to recognize strings under 'a', 'a*b+', 'abb'.
+### Correct
+
+```
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+bool matchA(char *str) {
+    return (strlen(str) == 1 && str[0] == 'a');
+}
+
+bool matchAStarBPlus(char *str) {
+    int length = strlen(str);
+    if (length == 0)
+        return false;
+
+    bool foundA = false;
+    bool foundB = false;
+
+    for (int i = 0; i < length; i++) {
+        if (str[i] == 'a') {
+            if (foundB) {
+                // 'a' should not be found after 'b'
+                return false;
+            }
+            foundA = true;
+        } else if (str[i] == 'b') {
+            if (!foundA) {
+                // 'b' should be preceded by 'a'
+                return false;
+            }
+            foundB = true;
+        } else {
+            // If neither 'a' nor 'b', return false
+            return false;
+        }
+    }
+
+    // Return true only if both 'a' and 'b' are found
+    return foundA && foundB;
+}
+
+bool matchABB(char *str) {
+    int length = strlen(str);
+    if (length != 3)
+        return false;
+
+    return (str[0] == 'a' && str[1] == 'b' && str[2] == 'b');
+}
+
+int main() {
+    char input[100];
+
+    printf("Enter a string: ");
+    fgets(input, sizeof(input), stdin);
+    input[strcspn(input, "\n")] = '\0'; // Remove newline character
+
+    if (matchA(input)) {
+        printf("The string matches the pattern 'a'.\n");
+    } else if (matchABB(input)) {
+        printf("The string matches the pattern 'abb'.\n");
+    } else if (matchAStarBPlus(input)) {
+        printf("The string matches the pattern 'a*b+'.\n");
+    } else {
+        printf("The string does not match any recognized pattern.\n");
+    }
+
+    return 0;
+}
+```
+
+
+
+### Bhul
 ```
 #include <stdio.h>
 #include <stdbool.h>
